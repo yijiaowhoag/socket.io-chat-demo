@@ -7,9 +7,13 @@ const app = express();
 
 const httpServer = createServer(app);
 
-const io = new Server();
+const io = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:8081',
+  },
+});
 
-app.use(express.static('public'));
+app.use(express.static('dist'));
 
 const onConnection = (socket) => {
   console.log('User connected');
