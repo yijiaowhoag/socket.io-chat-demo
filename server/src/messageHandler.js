@@ -1,12 +1,22 @@
+const { InMemoryMessageStore } = require('./messageStore');
+const messageStore = new InMemoryMessageStore();
+
 module.exports = (io, socket) => {
-  const createMessage = (payload) => {
-    console.log('createMessage:', payload);
+  const createMessage = ({ to, content }) => {
+    const message = { from: socket.userID, to, content };
+
+    // Forward the private message to the right recipient
+    // (and to other tabs of sender)
+    socket.to(to).to(socket.userID).emit('message:new', message);
+    messageStore.saveMessage(message);
   };
 
-  const readMessage = (payload) => {
-    console.log('readMessage:', payload);
+  const readMessages = (room, cb) => {
+    const messages = messageStore.findMessagesForUser(room);
+
+    return cb({ messages });
   };
 
-  socket.on('message:create', createMessage);
-  socket.on('message:read', readMessage);
+  socket.on('message:new', createMessage);
+  socket.on('message:list', readMessages);
 };

@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const devMode = process.env.NODE.ENV != 'production';
 
@@ -12,8 +13,10 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   devServer: {
-    static: './dist',
+    static: path.resolve(__dirname, 'dist'),
+    compress: true,
     hot: true,
+    port: 3000,
   },
   module: {
     rules: [
@@ -32,5 +35,6 @@ module.exports = {
       template: './public/index.html',
       favicon: './public/favicon.ico',
     }),
+    new Dotenv(),
   ],
 };

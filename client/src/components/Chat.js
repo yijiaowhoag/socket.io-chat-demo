@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
+import React, { useEffect, useState } from 'react';
+import useTyping from '../hooks/useTyping';
 
-const socket = io('http://localhost:8080');
+const Chat = ({ socket }) => {
+  const [existingUsers, setExistingUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-const Chat = () => {
-  const [isConnected, setIsConnected] = useState(false);
   const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  const [isTyping, register] = useTyping({ timeout: 3000 });
 
   useEffect(() => {
-    socket.on('connect', () => {
-      setIsConnected(true);
-    });
-
-    socket.on('disconnect', () => {
-      setIsConnected(false);
+    socket.on('users', (users) => setExistingUsers(users));
+    socket.on('message:new', (payload) => {
+      setMessages([...messages, payload]);
     });
 
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
+      socket.off('users');
+      socket.off('message:new');
     };
   }, []);
 
@@ -28,14 +28,41 @@ const Chat = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    socket.emit('message:create', { message });
+    const content = message.trim();
+    if (!content) return;
+
+    socket.emit('message:new', {
+      to: selectedUser?.userID || 'general',
+      content,
+    });
+    setMessage('');
   };
 
   return (
     <div>
-      <h1>Chat Connected: {isConnected}</h1>
+      <div>
+        <h3>Users</h3>
+        <ul>
+          {existingUsers.map((user) => (
+            <li key={user.userID} onClick={() => setSelectedUser(user)}>
+              <p>{JSON.stringify(user)}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3>Recent Messages</h3>
+        <ul>
+          {messages.map((message, idx) => (
+            <li key={idx}>
+              <p>{JSON.stringify(message)}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
       <form onSubmit={handleSubmit}>
-        <textarea value={message} onChange={handleChange} />
+        <textarea ref={register} value={message} onChange={handleChange} />
+        Typing? {isTyping ? '✅' : '❌'}
         <button type="submit">Send Message</button>
       </form>
     </div>
