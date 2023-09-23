@@ -3,22 +3,11 @@ import { io } from 'socket.io-client';
 import Chat from './components/Chat';
 import UsernameForm from './components/Username';
 
-const getRandomIntInclusive = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
-};
-const socket = io(
-  ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082'][
-    getRandomIntInclusive(0, 2)
-  ],
-  {
-    autoConnect: false,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 5000,
-    transports: ['websocket'],
-  }
-);
+const socket = io(process.env.SOCKET_ENDPOINT, {
+  autoConnect: false,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 5000,
+});
 
 const App = () => {
   const [usernameSelected, setUsernameSelected] = useState(false);
