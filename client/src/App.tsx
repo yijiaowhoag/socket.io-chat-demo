@@ -1,13 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
+import React, { useState, useEffect, FormEventHandler } from 'react';
+import socket from './socket';
 import Chat from './components/Chat';
 import UsernameForm from './components/Username';
-
-const socket = io(process.env.SOCKET_ENDPOINT, {
-  autoConnect: false,
-  reconnectionAttempts: 5,
-  reconnectionDelay: 5000,
-});
 
 const App = () => {
   const [usernameSelected, setUsernameSelected] = useState(false);
@@ -56,10 +50,10 @@ const App = () => {
     };
   }, []);
 
-  const onUsernameSelected = (e) => {
+  const onUsernameSelected: FormEventHandler = (e) => {
     e.preventDefault();
 
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(e.currentTarget as HTMLFormElement);
     const username = fd.get('username')?.toString().trim();
 
     if (!username) return;
@@ -70,7 +64,7 @@ const App = () => {
   };
 
   return usernameSelected ? (
-    <Chat socket={socket} />
+    <Chat />
   ) : (
     <UsernameForm onUsernameSelected={onUsernameSelected} />
   );

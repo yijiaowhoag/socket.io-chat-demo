@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, FormEventHandler } from 'react';
 
-const UsernameForm = ({ onUsernameSelected }) => {
+interface UsernameFormProps {
+  onUsernameSelected: FormEventHandler;
+}
+
+const UsernameForm: React.FC<UsernameFormProps> = ({ onUsernameSelected }) => {
   const [username, setUsername] = useState('');
 
   return (

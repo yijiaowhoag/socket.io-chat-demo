@@ -1,9 +1,19 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 
-const useTyping = ({ timeout }) => {
+type TextElement = HTMLInputElement | HTMLTextAreaElement;
+type RegisterElement = <Element extends TextElement = TextElement>(
+  el: Element | null
+) => void;
+
+interface UseTypingProps {
+  timeout?: number;
+}
+
+const useTyping = ({ timeout }: UseTypingProps): [boolean, RegisterElement] => {
+  const timeoutRef = useRef<NodeJS.Timeout>();
+
   const [isTyping, setIsTyping] = useState(false);
-  const [currentEl, setCurrentEl] = useState(null);
-  const timeoutRef = useRef(null);
+  const [currentEl, setCurrentEl] = useState<TextElement | null>(null);
 
   const reset = useCallback(() => {
     // Debounce `reset()` based on `timeout`
@@ -15,7 +25,7 @@ const useTyping = ({ timeout }) => {
     }, timeout);
   }, [timeout]);
 
-  const register = useCallback((el) => {
+  const register: RegisterElement = useCallback((el) => {
     setCurrentEl(el);
     if (!el) {
       setIsTyping(false);
@@ -36,8 +46,9 @@ const useTyping = ({ timeout }) => {
       return;
     }
 
-    const keyPressListener = (e) => {
-      const hasValue = e.target.value !== '';
+    const keyPressListener: EventListener = (e) => {
+      const hasValue =
+        (e.target as HTMLInputElement | HTMLTextAreaElement).value !== '';
 
       setIsTyping(hasValue);
       reset();
