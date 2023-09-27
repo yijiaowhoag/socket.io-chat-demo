@@ -25,11 +25,15 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+      { test: /\.css$/, use: ['style-loader', 'css-loader', 'postcss-loader'] },
     ],
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      '@/components': path.resolve(__dirname, 'src/components/'),
+      '@/hooks': path.resolve(__dirname, 'src/hooks/'),
+    },
   },
   output: {
     filename: 'bundle.js',
