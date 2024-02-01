@@ -28,5 +28,5 @@ jobs:
         #   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: gh pr merge --auto --squash "$PR_URL"
         env:
-          PR_URL: ${{ github.event.workflow_run.pull_requests[0].url }}
+          PR_URL: ${{ github.event.workflow_run.pull_requests[0].number }}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
