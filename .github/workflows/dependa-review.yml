@@ -4,6 +4,10 @@ on:
   pull_request_target:
     types: [assigned, opened, synchronize, reopened]
     branches: ['security-updates']
+    
+  push:
+    branches:
+      - "test-workflows"
 
 permissions:
   pull-requests: write
