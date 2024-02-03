@@ -15,7 +15,7 @@ permissions:
 jobs:
   review-pr:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: ${{github.actor == 'dependabot[bot]' || github.actor == 'yijiaowhoag'}}
     steps:
       - name: Dependabot metadata
         id: dependabot-metadata
